@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PawPal - Manage Pet Profiles</title>
+  <style>
+    :root { --primary: #1b4332; --primary-light: #2d6a4f; --accent: #e9c46a; --bg: #f8f9fa; --text: #2b2d42; --card-bg: #fff; --border: #e9ecef; --font-scale: 1; }
+    body.high-contrast { --primary: #000; --primary-light: #111; --accent: #ffff00; --bg: #fff; --text: #000; --card-bg: #fff; --border: #000; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.6; font-size: calc(16px * var(--font-scale)); }
+
+    .a11y-bar { background: #111; color: #fff; padding: 6px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+    .a11y-btn { background: #333; color: #fff; border: 1px solid #555; padding: 3px 8px; cursor: pointer; border-radius: 3px; }
+
+    header { background: var(--primary); color: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 1.5rem; font-weight: bold; color: white; text-decoration: none; }
+    nav a { color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; }
+    nav a:hover, nav a.active { background: var(--primary-light); }
+
+    .container { max-width: 1100px; margin: 30px auto; padding: 0 5%; display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
+    .pet-form, .pet-list { background: var(--card-bg); padding: 25px; border-radius: 8px; border: 1px solid var(--border); }
+    
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-weight: bold; font-size: 0.85rem; margin-bottom: 4px; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .btn-save { background: var(--primary); color: white; border: none; padding: 10px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
+    .pets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }
+    .pet-card { border: 1px solid var(--border); border-radius: 8px; padding: 15px; background: #fafafa; }
+  </style>
+</head>
+<body>
+
+  <div class="a11y-bar">
+    <span>WCAG Controls</span>
+    <div>
+      <button class="a11y-btn" onclick="adjustText(-1)">A-</button>
+      <button class="a11y-btn" onclick="adjustText(1)">A+</button>
+      <button class="a11y-btn" onclick="toggleContrast()">High Contrast</button>
+    </div>
+  </div>
+
+  <header>
+    <a href="index.html" class="logo">🐾 PawPal</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="search.html">Find Sitters</a>
+      <a href="profile.html">Sitter Profile</a>
+      <a href="mypets.html" class="active">My Pets</a>
+      <a href="dashboard.html">Dashboard</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <!-- Add New Pet Form -->
+    <aside class="pet-form">
+      <h3>➕ Register New Pet</h3>
+      <form id="add-pet-form" onsubmit="savePet(event)">
+        <div class="form-group">
+          <label for="pet-name">Pet Name</label>
+          <input type="text" id="pet-name" required placeholder="e.g. Milo">
+        </div>
+        <div class="form-group">
+          <label for="pet-type">Species</label>
+          <select id="pet-type">
+            <option value="Dog">Dog</option>
+            <option value="Cat">Cat</option>
+            <option value="Bird">Bird / Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="pet-breed">Breed & Age</label>
+          <input type="text" id="pet-breed" placeholder="e.g. Golden Retriever, 3 yrs">
+        </div>
+        <div class="form-group">
+          <label for="pet-notes">Medical & Diet Notes</label>
+          <textarea id="pet-notes" rows="3" placeholder="Special diet, medication timing, etc."></textarea>
+        </div>
+        <button type="submit" class="btn-save">Save Pet Profile</button>
+      </form>
+    </aside>
+
+    <!-- List of Registered Pets -->
+    <main class="pet-list">
+      <h2>My Registered Pets</h2>
+      <p style="font-size: 0.9rem; color: #666;">These details are shared securely only with your confirmed sitters.</p>
+      
+      <div class="pets-grid" id="pets-display">
+        <!-- Rendered via JS -->
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const defaultPets = [
+      { name: "Milo", type: "Dog", breed: "Golden Retriever, 3 yrs", notes: "Needs 30 min daily walk. Allergic to chicken." },
+      { name: "Luna", type: "Cat", breed: "Domestic Short Hair, 2 yrs", notes: "Indoor cat. Feeds twice daily at 8am and 6pm." }
+    ];
+
+    function loadPets() {
+      const pets = JSON.parse(localStorage.getItem('pawpal_pets')) || defaultPets;
+      const display = document.getElementById('pets-display');
+      
+      display.innerHTML = pets.map(p => `
+        <div class="pet-card">
+          <div style="font-size:2rem; text-align:center;">${p.type === 'Dog' ? '🐶' : '🐱'}</div>
+          <h3 style="text-align:center;">${p.name}</h3>
+          <p style="font-size:0.85rem; text-align:center; color:#666;">${p.breed}</p>
+          <hr style="margin: 8px 0;">
+          <p style="font-size:0.8rem;"><strong>Notes:</strong> ${p.notes}</p>
+        </div>
+      `).join('');
+    }
+
+    function savePet(e) {
+      e.preventDefault();
+      const name = document.getElementById('pet-name').value;
+      const type = document.getElementById('pet-type').value;
+      const breed = document.getElementById('pet-breed').value;
+      const notes = document.getElementById('pet-notes').value;
+
+      const newPet = { name, type, breed, notes };
+      const currentPets = JSON.parse(localStorage.getItem('pawpal_pets')) || defaultPets;
+      currentPets.push(newPet);
+      
+      localStorage.setItem('pawpal_pets', JSON.stringify(currentPets));
+      document.getElementById('add-pet-form').reset();
+      loadPets();
+      alert('✓ Pet Profile Saved!');
+    }
+
+    loadPets();
+
+    let fontScale = 1;
+    function adjustText(d) { fontScale = d === 0 ? 1 : fontScale + d * 0.1; document.documentElement.style.setProperty('--font-scale', fontScale); }
+    function toggleContrast() { document.body.classList.toggle('high-contrast'); }
+  </script>
+</body>
+</html>

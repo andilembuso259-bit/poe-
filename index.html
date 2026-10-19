@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PawPal - Trusted Local Pet Care Services</title>
+  <style>
+    :root {
+      --primary: #1b4332;
+      --primary-light: #2d6a4f;
+      --accent: #e9c46a;
+      --bg: #f8f9fa;
+      --text: #2b2d42;
+      --card-bg: #ffffff;
+      --border: #e9ecef;
+      --font-scale: 1;
+    }
+
+    body.high-contrast {
+      --primary: #000000;
+      --primary-light: #111111;
+      --accent: #ffff00;
+      --bg: #ffffff;
+      --text: #000000;
+      --card-bg: #ffffff;
+      --border: #000000;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.6; font-size: calc(16px * var(--font-scale)); }
+
+    /* Accessibility Bar */
+    .a11y-bar {
+      background: #111; color: #fff; padding: 6px 5%; display: flex;
+      justify-content: space-between; align-items: center; font-size: 0.85rem;
+    }
+    .a11y-btn { background: #333; color: #fff; border: 1px solid #555; padding: 3px 8px; cursor: pointer; border-radius: 3px; }
+
+    /* Navigation */
+    header { background: var(--primary); color: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 1.5rem; font-weight: bold; color: white; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    nav { display: flex; gap: 15px; }
+    nav a { color: white; text-decoration: none; font-weight: 500; padding: 6px 12px; border-radius: 4px; transition: background 0.2s; }
+    nav a:hover, nav a.active { background: var(--primary-light); }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(rgba(27,67,50,0.85), rgba(45,106,79,0.85)), url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80') center/cover;
+      color: white; padding: 80px 5% 100px; text-align: center; border-radius: 0 0 20px 20px;
+    }
+    .hero h1 { font-size: 2.5rem; margin-bottom: 15px; }
+    .hero p { font-size: 1.2rem; max-width: 600px; margin: 0 auto 30px; opacity: 0.95; }
+
+    /* Search Box */
+    .search-card {
+      background: var(--card-bg); color: var(--text); padding: 25px; border-radius: 12px;
+      max-width: 850px; margin: -50px auto 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border);
+    }
+    .search-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; }
+    .form-group select, .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+    .btn-search { width: 100%; background: var(--primary); color: white; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+
+    /* Features Grid */
+    .features { padding: 40px 5%; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .feature-card { background: var(--card-bg); padding: 25px; border-radius: 8px; border: 1px solid var(--border); text-align: center; }
+    .badge-v { background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; display: inline-block; margin-bottom: 10px; }
+
+    footer { background: var(--primary); color: white; text-align: center; padding: 20px; margin-top: 50px; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <!-- WCAG Accessibility Bar -->
+  <div class="a11y-bar">
+    <span>WCAG 2.0 AA Controls</span>
+    <div>
+      <button class="a11y-btn" onclick="adjustText(-1)">A-</button>
+      <button class="a11y-btn" onclick="adjustText(0)">Reset</button>
+      <button class="a11y-btn" onclick="adjustText(1)">A+</button>
+      <button class="a11y-btn" onclick="toggleContrast()">Toggle High Contrast</button>
+    </div>
+  </div>
+
+  <!-- Main Header Navigation -->
+  <header>
+    <a href="index.html" class="logo">🐾 PawPal</a>
+    <nav>
+      <a href="index.html" class="active">Home</a>
+      <a href="search.html">Find Sitters</a>
+      <a href="profile.html">Sitter Profile</a>
+      <a href="mypets.html">My Pets</a>
+      <a href="dashboard.html">Dashboard</a>
+    </nav>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero">
+    <h1>Loving Pet Care in Your Neighborhood</h1>
+    <p>Connect with vetted, ID-verified local sitters for dog walking, house sitting, and pet boarding in South Africa.</p>
+  </section>
+
+  <!-- Quick Search Section -->
+  <div class="search-card">
+    <form action="search.html" method="GET">
+      <div class="search-grid">
+        <div class="form-group">
+          <label for="suburb">Suburb / Location</label>
+          <select id="suburb" name="suburb">
+            <option value="Sandton">Sandton, JHB</option>
+            <option value="Hatfield">Hatfield, PTA</option>
+            <option value="Centurion">Centurion</option>
+            <option value="Rosebank">Rosebank, JHB</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="service">Service Needed</label>
+          <select id="service" name="service">
+            <option value="walking">Dog Walking</option>
+            <option value="boarding">Pet Boarding</option>
+            <option value="sitting">House Sitting</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="start-date">Start Date</label>
+          <input type="date" id="start-date" name="start">
+        </div>
+      </div>
+      <button type="submit" class="btn-search">Search Available Sitters</button>
+    </form>
+  </div>
+
+  <!-- Trust Features -->
+  <section class="features">
+    <div class="feature-card">
+      <span class="badge-v">✓ 100% ID Verified</span>
+      <h3>Trusted & Vetted</h3>
+      <p>Every pet sitter undergoes background identity checks and reference verification before joining.</p>
+    </div>
+    <div class="feature-card">
+      <span class="badge-v">🛡️ Encrypted Chat</span>
+      <h3>Direct Communication</h3>
+      <p>Chat directly with your sitter, share pet care instructions, and get updates during stays.</p>
+    </div>
+    <div class="feature-card">
+      <span class="badge-v">⭐ Verified Reviews</span>
+      <h3>Authentic Feedback</h3>
+      <p>Only pet owners with completed bookings can leave verified reviews and ratings.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>PawPal Pet Care Services Prototype &copy; 2026 | HCIN6222 Module Portfolio</p>
+  </footer>
+
+  <script>
+    // Accessibility JavaScript Controls
+    let fontScale = 1;
+    function adjustText(delta) {
+      if (delta === 0) fontScale = 1;
+      else fontScale = Math.max(0.8, Math.min(1.4, fontScale + delta * 0.1));
+      document.documentElement.style.setProperty('--font-scale', fontScale);
+    }
+
+    function toggleContrast() {
+      document.body.classList.toggle('high-contrast');
+    }
+
+    // Set default date picker constraint to today
+    document.getElementById('start-date').min = new Date().toISOString().split('T')[0];
+  </script>
+</body>
+</html>

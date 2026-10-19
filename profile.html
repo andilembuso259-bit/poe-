@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PawPal - Sitter Profile & Booking</title>
+  <style>
+    :root { --primary: #1b4332; --primary-light: #2d6a4f; --accent: #e9c46a; --bg: #f8f9fa; --text: #2b2d42; --card-bg: #fff; --border: #e9ecef; --font-scale: 1; }
+    body.high-contrast { --primary: #000; --primary-light: #111; --accent: #ffff00; --bg: #fff; --text: #000; --card-bg: #fff; --border: #000; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.6; font-size: calc(16px * var(--font-scale)); }
+
+    .a11y-bar { background: #111; color: #fff; padding: 6px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+    .a11y-btn { background: #333; color: #fff; border: 1px solid #555; padding: 3px 8px; cursor: pointer; border-radius: 3px; }
+
+    header { background: var(--primary); color: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 1.5rem; font-weight: bold; color: white; text-decoration: none; }
+    nav a { color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; }
+    nav a:hover, nav a.active { background: var(--primary-light); }
+
+    .container { max-width: 1000px; margin: 30px auto; padding: 0 5%; display: grid; grid-template-columns: 1fr 340px; gap: 30px; }
+    .profile-card, .booking-card { background: var(--card-bg); padding: 25px; border-radius: 8px; border: 1px solid var(--border); }
+    .sitter-header { display: flex; gap: 20px; align-items: center; margin-bottom: 20px; }
+    .avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; }
+    .v-badge { background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; }
+
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: bold; font-size: 0.85rem; margin-bottom: 5px; }
+    .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+    .btn-book { width: 100%; background: var(--primary); color: white; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    .price-summary { background: #f1f3f5; padding: 12px; border-radius: 6px; margin: 15px 0; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <div class="a11y-bar">
+    <span>WCAG Controls</span>
+    <div>
+      <button class="a11y-btn" onclick="adjustText(-1)">A-</button>
+      <button class="a11y-btn" onclick="adjustText(1)">A+</button>
+      <button class="a11y-btn" onclick="toggleContrast()">High Contrast</button>
+    </div>
+  </div>
+
+  <header>
+    <a href="index.html" class="logo">🐾 PawPal</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="search.html">Find Sitters</a>
+      <a href="profile.html" class="active">Sitter Profile</a>
+      <a href="mypets.html">My Pets</a>
+      <a href="dashboard.html">Dashboard</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <!-- Main Profile Content -->
+    <main class="profile-card">
+      <div class="sitter-header">
+        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80" class="avatar" alt="Sarah Jenkins">
+        <div>
+          <h2>Sarah Jenkins <span class="v-badge">✓ ID Verified</span></h2>
+          <p style="color:#666;">Sandton, Johannesburg • Experienced Pet Carer</p>
+          <p>⭐ 4.9 out of 5 (38 Verified Reviews)</p>
+        </div>
+      </div>
+
+      <h3>About Sarah</h3>
+      <p style="margin: 10px 0 20px;">Hi! I'm a lifelong dog owner and certified pet lover. I have over 5 years of experience looking after dogs of all sizes and temperament levels. Your pet will receive personal care, routine walks, and lots of attention.</p>
+
+      <h3>Verified Qualifications & Safety</h3>
+      <ul style="margin: 10px 0 20px; padding-left: 20px;">
+        <li>Identity Document & Criminal Record Checked (Gauteng SAPS Clear)</li>
+        <li>Pet First Aid & CPR Certified</li>
+        <li>Secure Fenced Garden Home</li>
+      </ul>
+    </main>
+
+    <!-- Booking Widget -->
+    <aside class="booking-card">
+      <h3>Book Reserve Stay</h3>
+      <div style="font-size: 1.4rem; font-weight: bold; color: var(--primary); margin: 10px 0;">R250 <span style="font-size:0.9rem; color:#666; font-weight:normal;">/ day</span></div>
+
+      <form id="booking-form" onsubmit="handleBooking(event)">
+        <div class="form-group">
+          <label for="pet-select">Select Your Pet</label>
+          <select id="pet-select" required>
+            <option value="Milo (Golden Retriever)">Milo (Golden Retriever)</option>
+            <option value="Luna (Cat)">Luna (Cat)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="days-count">Number of Days</label>
+          <input type="number" id="days-count" value="1" min="1" max="30" onchange="calcTotal()">
+        </div>
+
+        <div class="price-summary">
+          <div style="display:flex; justify-content:space-between;">
+            <span>Rate: R250 x <span id="days-label">1</span> day(s)</span>
+            <span id="subtotal">R250</span>
+          </div>
+          <hr style="margin:8px 0;">
+          <div style="display:flex; justify-content:space-between; font-weight:bold;">
+            <span>Total Estimated Cost:</span>
+            <span id="total-price">R250</span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-book">Send Request Request</button>
+      </form>
+    </aside>
+  </div>
+
+  <script>
+    function calcTotal() {
+      const days = parseInt(document.getElementById('days-count').value) || 1;
+      const total = days * 250;
+      document.getElementById('days-label').innerText = days;
+      document.getElementById('subtotal').innerText = 'R' + total;
+      document.getElementById('total-price').innerText = 'R' + total;
+    }
+
+    function handleBooking(e) {
+      e.preventDefault();
+      const pet = document.getElementById('pet-select').value;
+      const days = document.getElementById('days-count').value;
+
+      // Save booking to LocalStorage
+      const newBooking = {
+        sitter: "Sarah Jenkins",
+        pet: pet,
+        days: days,
+        status: "Pending Sitter Confirmation",
+        date: new Date().toLocaleDateString()
+      };
+
+      const existing = JSON.parse(localStorage.getItem('pawpal_bookings') || '[]');
+      existing.push(newBooking);
+      localStorage.setItem('pawpal_bookings', JSON.stringify(existing));
+
+      alert('✓ Booking Request Sent Successfully! You can track this under your Dashboard.');
+      window.location.href = 'dashboard.html';
+    }
+
+    let fontScale = 1;
+    function adjustText(d) { fontScale = d === 0 ? 1 : fontScale + d * 0.1; document.documentElement.style.setProperty('--font-scale', fontScale); }
+    function toggleContrast() { document.body.classList.toggle('high-contrast'); }
+  </script>
+</body>
+</html>

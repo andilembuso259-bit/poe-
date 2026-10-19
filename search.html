@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PawPal - Find Local Pet Sitters</title>
+  <style>
+    :root {
+      --primary: #1b4332; --primary-light: #2d6a4f; --accent: #e9c46a;
+      --bg: #f8f9fa; --text: #2b2d42; --card-bg: #ffffff; --border: #e9ecef; --font-scale: 1;
+    }
+    body.high-contrast { --primary: #000; --primary-light: #111; --accent: #ffff00; --bg: #fff; --text: #000; --card-bg: #fff; --border: #000; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.6; font-size: calc(16px * var(--font-scale)); }
+
+    .a11y-bar { background: #111; color: #fff; padding: 6px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+    .a11y-btn { background: #333; color: #fff; border: 1px solid #555; padding: 3px 8px; cursor: pointer; border-radius: 3px; }
+
+    header { background: var(--primary); color: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 1.5rem; font-weight: bold; color: white; text-decoration: none; }
+    nav a { color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; }
+    nav a:hover, nav a.active { background: var(--primary-light); }
+
+    .search-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; padding: 30px 5%; max-width: 1200px; margin: 0 auto; }
+    .filter-sidebar { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border); height: fit-content; }
+    .filter-group { margin-bottom: 15px; }
+    .filter-group label { display: block; font-weight: bold; font-size: 0.9rem; margin-bottom: 5px; }
+    .filter-group select, .filter-group input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+
+    .sitter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .sitter-card { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; }
+    .sitter-img { width: 100%; height: 180px; object-fit: cover; }
+    .sitter-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+    .v-badge { background: #d4edda; color: #155724; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+    .rate { font-size: 1.2rem; font-weight: bold; color: var(--primary); margin: 10px 0; }
+    .btn-view { background: var(--primary); color: white; text-decoration: none; text-align: center; padding: 10px; border-radius: 4px; font-weight: bold; margin-top: auto; display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="a11y-bar">
+    <span>WCAG Controls</span>
+    <div>
+      <button class="a11y-btn" onclick="adjustText(-1)">A-</button>
+      <button class="a11y-btn" onclick="adjustText(1)">A+</button>
+      <button class="a11y-btn" onclick="toggleContrast()">High Contrast</button>
+    </div>
+  </div>
+
+  <header>
+    <a href="index.html" class="logo">🐾 PawPal</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="search.html" class="active">Find Sitters</a>
+      <a href="profile.html">Sitter Profile</a>
+      <a href="mypets.html">My Pets</a>
+      <a href="dashboard.html">Dashboard</a>
+    </nav>
+  </header>
+
+  <div class="search-layout">
+    <!-- Filters Sidebar -->
+    <aside class="filter-sidebar">
+      <h3>Filter Results</h3>
+      <hr style="margin: 10px 0 15px;">
+      
+      <div class="filter-group">
+        <label for="suburb-filter">Suburb</label>
+        <select id="suburb-filter" onchange="applyFilters()">
+          <option value="all">All Suburbs</option>
+          <option value="Sandton">Sandton</option>
+          <option value="Hatfield">Hatfield</option>
+          <option value="Centurion">Centurion</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="service-filter">Service</label>
+        <select id="service-filter" onchange="applyFilters()">
+          <option value="all">All Services</option>
+          <option value="Dog Walking">Dog Walking</option>
+          <option value="Pet Boarding">Pet Boarding</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="max-price">Max Daily Rate (R)</label>
+        <input type="number" id="max-price" placeholder="e.g. 250" oninput="applyFilters()">
+      </div>
+    </aside>
+
+    <!-- Sitters List -->
+    <main>
+      <h2 style="margin-bottom: 15px;">Available Verified Sitters (<span id="results-count">3</span>)</h2>
+      <div class="sitter-grid" id="sitters-container">
+        <!-- Dynamic Cards Inserted Here via JS -->
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const sittersData = [
+      { id: 1, name: "Sarah Jenkins", suburb: "Sandton", service: "Pet Boarding", rate: 250, rating: "4.9 ⭐ (38)", img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80" },
+      { id: 2, name: "David Molefe", suburb: "Hatfield", service: "Dog Walking", rate: 150, rating: "5.0 ⭐ (24)", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" },
+      { id: 3, name: "Jessica Taylor", suburb: "Centurion", service: "Pet Boarding", rate: 220, rating: "4.8 ⭐ (19)", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" }
+    ];
+
+    function renderSitters(list) {
+      const container = document.getElementById('sitters-container');
+      document.getElementById('results-count').innerText = list.length;
+      container.innerHTML = list.map(s => `
+        <div class="sitter-card">
+          <img src="${s.img}" class="sitter-img" alt="${s.name}">
+          <div class="sitter-info">
+            <div><span class="v-badge">✓ Verified Sitter</span></div>
+            <h3 style="margin-top:5px;">${s.name}</h3>
+            <p style="font-size:0.85rem; color:#666;">📍 ${s.suburb} • ${s.service}</p>
+            <p style="font-size:0.85rem;">${s.rating}</p>
+            <div class="rate">R${s.rate} / day</div>
+            <a href="profile.html?id=${s.id}" class="btn-view">View Profile & Book</a>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function applyFilters() {
+      const suburb = document.getElementById('suburb-filter').value;
+      const service = document.getElementById('service-filter').value;
+      const maxPrice = parseFloat(document.getElementById('max-price').value) || Infinity;
+
+      const filtered = sittersData.filter(s => {
+        return (suburb === 'all' || s.suburb === suburb) &&
+               (service === 'all' || s.service === service) &&
+               (s.rate <= maxPrice);
+      });
+      renderSitters(filtered);
+    }
+
+    // Initial Render
+    renderSitters(sittersData);
+
+    let fontScale = 1;
+    function adjustText(d) { fontScale = d === 0 ? 1 : fontScale + d * 0.1; document.documentElement.style.setProperty('--font-scale', fontScale); }
+    function toggleContrast() { document.body.classList.toggle('high-contrast'); }
+  </script>
+</body>
+</html>
